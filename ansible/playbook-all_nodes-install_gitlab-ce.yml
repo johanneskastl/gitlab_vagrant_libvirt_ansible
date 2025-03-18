@@ -1,0 +1,14 @@
+---
+- name: 'Install gitlab-ce'
+  hosts: 'all'
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: 'johanneskastl.install_one_or_more_packages'
+      packages_to_be_installed:
+        # required to have chef not fail with
+        # 'Chef::Exceptions::CannotDetermineNodeName: Unable to determine node
+        # name'
+        - hostname
+        - gitlab-ce
