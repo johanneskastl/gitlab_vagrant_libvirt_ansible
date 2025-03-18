@@ -1,0 +1,25 @@
+---
+- name: 'Add the Gitlab repository'
+  hosts: 'all'
+  gather_facts: true
+  become: true
+
+  pre_tasks:
+
+    - name: 'Import the GPG keys'
+      ansible.builtin.rpm_key:
+        state: present
+        key: "{{ item }}"
+      loop:
+        - 'https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey'
+        - 'https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey/gitlab-gitlab-ce-3D645A26AB9FBD22.pub.gpg'
+        - 'https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey/gitlab-gitlab-ce-CB947AD886C8E8FD.pub.gpg'
+
+  roles:
+
+    - role: 'johanneskastl.add_zypper_repository'
+      repository_name: 'gitlab_gitlab-ce'
+      repository_baseurl: "https://packages.gitlab.com/gitlab/gitlab-ce/opensuse/{{ ansible_distribution_version }}/$basearch"
+      auto_import_keys: '1'
+      when:
+        - ansible_distribution == "openSUSE Leap"
