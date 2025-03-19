@@ -22,3 +22,6 @@
 
 - name: 'Run playbook-all_nodes-minimal_bashrc.yml'
   ansible.builtin.import_playbook: playbook-all_nodes-minimal_bashrc.yml
+
+- name: 'Run playbook-all_nodes-set_hostname.yml'
+  ansible.builtin.import_playbook: playbook-all_nodes-set_hostname.yml
