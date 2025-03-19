@@ -1,0 +1,61 @@
+---
+- name: 'Configure and start gitlab'
+  hosts: 'all'
+  gather_facts: true
+  become: true
+
+  handlers:
+
+    - name: 'Run gitlab-ctl reconfigure'
+      ansible.builtin.command:
+        cmd: 'gitlab-ctl reconfigure'
+
+  tasks:
+
+    - name: 'Set the initial root password in the configuration file'
+      ansible.builtin.lineinfile:
+        path: '/etc/gitlab/gitlab.rb'
+        regexp: '^gitlab_rails\[''initial_root_password''\]'
+        insertafter: '^# gitlab_rails\[''initial_root_password''\]'
+        # of course, you should not put passwords in plaintext into your playbooks.
+        # ansible-vault exists, you know...
+        line: 'gitlab_rails[''initial_root_password''] = "atotallysecurepassword"'
+        owner: 'root'
+        group: 'root'
+        mode: '0600'
+      notify:
+        - 'Run gitlab-ctl reconfigure'
+
+    - name: 'Disable creation of /etc/gitlab/initial_root_password'
+      ansible.builtin.lineinfile:
+        path: '/etc/gitlab/gitlab.rb'
+        regexp: '^gitlab_rails\[''store_initial_root_password''\]'
+        insertafter: '^# gitlab_rails\[''store_initial_root_password''\]'
+        line: 'gitlab_rails[''store_initial_root_password''] = false'
+        owner: 'root'
+        group: 'root'
+        mode: '0600'
+      notify:
+        - 'Run gitlab-ctl reconfigure'
+
+    - name: 'Change the external URL in the configuration file'
+      ansible.builtin.lineinfile:
+        path: '/etc/gitlab/gitlab.rb'
+        regexp: '^external_url'
+        line: external_url "http://gitlab.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io"
+        owner: 'root'
+        group: 'root'
+        mode: '0600'
+      notify:
+        - 'Run gitlab-ctl reconfigure'
+
+    - name: 'Flush handlers'
+      ansible.builtin.meta: flush_handlers
+
+    - name: 'Gitlab URL'
+      ansible.builtin.debug:
+        msg: "Connect to the following URL in your browser: http://gitlab.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io"
+
+    - name: 'Gitlab credentials'
+      ansible.builtin.debug:
+        msg: "To log in, use 'root' as the username and 'atotallysecurepassword' as the password"
