@@ -1,0 +1,10 @@
+---
+- name: 'Set the hostname'
+  hosts: 'all'
+  gather_facts: true
+  become: true
+
+  roles:
+
+    - role: 'johanneskastl.set_hostname'
+      domain_name: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io"
