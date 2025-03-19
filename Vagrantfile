@@ -13,8 +13,7 @@ Vagrant.configure("2") do |config|
       lv.cpus = 2
     end
 
-    # set the hostname
-    node.vm.hostname = "gitlab"
+    # do NOT set the hostname
 
     # disable shared folders
     node.vm.synced_folder ".", "/vagrant", disabled: true
