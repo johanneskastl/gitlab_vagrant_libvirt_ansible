@@ -11,4 +11,8 @@
         # 'Chef::Exceptions::CannotDetermineNodeName: Unable to determine node
         # name'
         - hostname
+        # required to have chef not fail with
+        # execute[load sysctl conf kernel.shmall] (postgresql::sysctl line 56)
+        # had an error: Errno::ENOENT: No such file or directory - sysctl
+        - procps
         - gitlab-ce
