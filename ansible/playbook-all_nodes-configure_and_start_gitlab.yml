@@ -52,6 +52,14 @@
     - name: 'Flush handlers'
       ansible.builtin.meta: flush_handlers
 
+    - name: 'Wait until the Gitlab URL is reachable'
+      ansible.builtin.uri:
+        url: "http://gitlab.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io"
+      register: result
+      until: "result.status == 200"
+      retries: 11
+      delay: 10
+
     - name: 'Gitlab URL'
       ansible.builtin.debug:
         msg: "Connect to the following URL in your browser: http://gitlab.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io"
